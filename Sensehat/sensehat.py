@@ -64,7 +64,8 @@ def run_measurement():  # Aangepast om meer sensordata op te slaan.
     sense.set_imu_config(True, True, True)  # Zet alle sensoren aan
     acc_data = sense.get_accelerometer_raw()
     compass_data = sense.get_compass_raw()
-    stream.write('%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n'
+    gyro_data = sense.get_gyroscope_raw()
+    stream.write('%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n'
                  % (time.time(), acc_data['x'], acc_data['y'], acc_data['z'],
                     sense.get_humidity(),
                     sense.get_temperature_from_humidity(),
@@ -72,7 +73,10 @@ def run_measurement():  # Aangepast om meer sensordata op te slaan.
                     sense.get_pressure(),
                     compass_data['x'],
                     compass_data['y'],
-                    compass_data['z']))
+                    compass_data['z'],
+                    gyro_data['x'],
+                    gyro_data['y'],
+                    gyro_data['z']))
 
 
 def startstop(event):
