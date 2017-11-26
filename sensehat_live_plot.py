@@ -10,8 +10,9 @@ fig = plt.gcf()
 fig.show()
 fig.canvas.draw()
 
+
 def refresh_df():
-    file_name = 'acc_27q5krgn.csv'
+    file_name = 'acc_6gajjlyc.csv'
     path = '/media/pi/DATA/Sensehat/data/'
     global df
     df = pd.read_csv(path+file_name, sep=',', header=None,
@@ -30,24 +31,22 @@ def create_plot_without_error(x, y, x_label, y_label):
     :return:
     """
     plt.plot(x, y, '.', color="#ff0000", ms=1)
-    #plt.plot(x, 0 * x + mu, '-', color="#ff0000", ms=5) # Creates a line at (literature) y value
     plt.xlabel(x_label)
     plt.ylabel(y_label)
-    
-    
-def multi_plot_sense_hat():
+
+
+def multi_plot_live():
     dot_width = 1
-    history = -500 # amount of data points to draw in figure. e.g. -500 keeps the lastest 500 data points.
     
-    t = df['t'][history:]
-    x1 = df['acc_x'][history:]
-    x2 = df['acc_y'][history:]
-    x3 = df['acc_z'][history:]
-    x4 = df['gyro_x'][history:]
-    x5 = df['gyro_y'][history:]
-    x6 = df['gyro_z'][history:]
-    
-    # Acc
+    t = df['t']
+    x1 = df['acc_x']
+    x2 = df['acc_y']
+    x3 = df['acc_z']
+    x4 = df['gyro_x']
+    x5 = df['gyro_y']
+    x6 = df['gyro_z']
+
+    # Accelerometer
     plt.subplot(2, 3, 1)  # nrows, ncols, plot_number
     plt.plot(t, x1, '.', color="#ff0000", ms=dot_width)
     plt.ylabel('acc_x')
@@ -60,7 +59,7 @@ def multi_plot_sense_hat():
     plt.plot(t, x3, '.', color="#ff0000", ms=dot_width)
     plt.ylabel('acc_z')
     
-    #Comp
+    # Gyroscope
     plt.subplot(2, 3, 4)  # nrows, ncols, plot_number
     plt.plot(t, x4, '.', color="#ff0000", ms=dot_width)
     plt.ylabel('gyro_x')
@@ -72,20 +71,24 @@ def multi_plot_sense_hat():
     plt.subplot(2, 3, 6)  # nrows, ncols, plot_number
     plt.plot(t, x6, '.', color="#ff0000", ms=dot_width)
     plt.ylabel('gyro_z')
-    
+
+
 def plot_3d():
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(df['acc_x'], df['acc_y'], df['acc_z'], c='r', marker='o')
 
-#refresh_df()
-#multi_plot_sense_hat()
-#fig.canvas.draw()
 
+plot_history = -1000  # amount of latest datapoints to plot in fig
+
+# plt.clf() clears figure but keeps window open
 while True:
+    tstart = time.time()
     refresh_df()
-    plt.clf() # Clears figure but keeps window open 
-    #create_plot_without_error(df['t'][-500:], df['acc_z'][-500:], 't', 'acc_z') #[-500:] draws last 500 indices
-    multi_plot_sense_hat()
-    #plot_3d()
-    fig.canvas.draw()
+    df = df.iloc[plot_history:]
+    plt.clf()
     
+    multi_plot_live()
+
+    plt.tight_layout()
+    fig.canvas.draw()
+    print('FPS: ', (time.time()-tstart))
