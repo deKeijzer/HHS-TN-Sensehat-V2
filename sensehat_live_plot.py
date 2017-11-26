@@ -11,7 +11,7 @@ fig.show()
 fig.canvas.draw()
 
 def refresh_df():
-    file_name = 'acc_shoaoia0.csv'
+    file_name = 'acc_27q5krgn.csv'
     path = '/media/pi/DATA/Sensehat/data/'
     global df
     df = pd.read_csv(path+file_name, sep=',', header=None,
@@ -34,16 +34,18 @@ def create_plot_without_error(x, y, x_label, y_label):
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     
-def multi_plot_sense_hat():
-    dot_width = 0.1
     
-    t = df['t']
-    x1 = df['acc_x']
-    x2 = df['acc_y']
-    x3 = df['acc_z']
-    x4 = df['gyro_x']
-    x5 = df['gyro_y']
-    x6 = df['gyro_z']
+def multi_plot_sense_hat():
+    dot_width = 1
+    history = -500 # amount of data points to draw in figure. e.g. -500 keeps the lastest 500 data points.
+    
+    t = df['t'][history:]
+    x1 = df['acc_x'][history:]
+    x2 = df['acc_y'][history:]
+    x3 = df['acc_z'][history:]
+    x4 = df['gyro_x'][history:]
+    x5 = df['gyro_y'][history:]
+    x6 = df['gyro_z'][history:]
     
     # Acc
     plt.subplot(2, 3, 1)  # nrows, ncols, plot_number
@@ -81,6 +83,8 @@ def plot_3d():
 
 while True:
     refresh_df()
+    plt.clf() # Clears figure but keeps window open 
+    #create_plot_without_error(df['t'][-500:], df['acc_z'][-500:], 't', 'acc_z') #[-500:] draws last 500 indices
     multi_plot_sense_hat()
     #plot_3d()
     fig.canvas.draw()
